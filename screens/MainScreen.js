@@ -1,8 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, RefreshControl, ScrollView } from 'react-native';
 import * as Location from 'expo-location';
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import TodayScreen from "./TodayScreen";
+import TomorrowScreen from "./TomorrowScreen";
+import DaysScreen from "./DaysScreen";
 
-export default function HomeComponent() {
+const Tab = createMaterialTopTabNavigator();
+
+function TabNavigation({location, date}) {
+  console.log(location);
+  return (
+    <Tab.Navigator 
+      tabBarOptions={{
+        style: styles.tab,
+        activeTintColor: 'white',
+        inactiveTintColor: 'grey',
+        indicatorStyle: styles.indicator
+      }} 
+    >
+      <Tab.Screen name="Today"  component={() => <TodayScreen location={location} date={date} />} sceneContainerStyle={styles.tab} />
+      <Tab.Screen name="Tomorrow" component={TomorrowScreen} style={styles.tab} />
+      <Tab.Screen name="10 Days" component={DaysScreen} style={styles.tab} />
+    </Tab.Navigator>
+  );
+}
+
+export default function MainScreen() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -44,6 +69,9 @@ export default function HomeComponent() {
     <ScrollView contentContainerStyle={styles.container} refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={getlocation} />
     }>
+      <NavigationContainer>
+        <TabNavigation location={text} date={dateObj.toUTCString()} />
+      </NavigationContainer>
       <Text>{text}</Text>
       <Text>{dateObj.toUTCString()}</Text>
     </ScrollView>
@@ -56,4 +84,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center'
   },
+  tab: {
+    paddingTop: 20,
+    color: 'white',
+    backgroundColor: 'blue'
+  },
+  indicator: {
+    backgroundColor: 'white'
+  },
+  label: {
+    color: 'white'
+  }
 });
