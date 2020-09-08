@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, RefreshControl, ScrollView, StatusBar } from 'react-native';
 import * as Location from 'expo-location';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import TodayScreen from "./TodayScreen";
 import TomorrowScreen from "./TomorrowScreen";
 import DaysScreen from "./DaysScreen";
+import { Header, Icon, Input } from "react-native-elements";
+import { TextInput } from 'react-native-gesture-handler';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -13,6 +15,8 @@ function TabNavigation({location, date}) {
   console.log(location);
   return (
     <Tab.Navigator 
+      tabBarPosition='bottom'
+      backBehavior='history'
       tabBarOptions={{
         style: styles.tab,
         activeTintColor: 'white',
@@ -69,11 +73,18 @@ export default function MainScreen() {
     <ScrollView contentContainerStyle={styles.container} refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={getlocation} />
     }>
+      <StatusBar backgroundColor="blue" barStyle='light-content' />
+      <View style={{backgroundColor: '#4FB0DB'}}>
+        <TextInput
+          placeholder="Search"
+          style={{ height: 50, backgroundColor: 'white' , zIndex: 2, borderRadius: 5, paddingHorizontal: 10, margin: 10}}
+        />
+      </View>
       <NavigationContainer>
-        <TabNavigation location={text} date={dateObj.toUTCString()} />
+        <TabNavigation
+          tab
+          location={text} date={dateObj.toUTCString()} />
       </NavigationContainer>
-      <Text>{text}</Text>
-      <Text>{dateObj.toUTCString()}</Text>
     </ScrollView>
   );
 }
@@ -85,14 +96,15 @@ const styles = StyleSheet.create({
     alignContent: 'center'
   },
   tab: {
-    paddingTop: 20,
     color: 'white',
-    backgroundColor: 'blue'
+    backgroundColor: '#4FB0DB',
+    marginTop: 0
   },
   indicator: {
     backgroundColor: 'white'
   },
   label: {
-    color: 'white'
+    color: 'white',
+    fontSize: 5,
   }
 });
