@@ -6,6 +6,17 @@ export default function App() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
+    var dateObj = new Date((1595243443 - 18000) * 1000); 
+ 
+    // Get hours from the timestamp 
+    var hours = dateObj.getUTCHours(); 
+    
+    // Get minutes part from the timestamp 
+    var minutes = dateObj.getUTCMinutes(); 
+    
+    // Get seconds part from the timestamp 
+    var seconds = dateObj.getUTCSeconds();
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestPermissionsAsync();
@@ -16,7 +27,7 @@ export default function App() {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
     })();
-  });
+  }, []);
 
   let text = 'Waiting..';
   if (errorMsg) {
@@ -28,6 +39,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>{text}</Text>
+      <Text>{dateObj.toUTCString()}</Text>
     </View>
   );
 }
