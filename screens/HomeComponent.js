@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, RefreshControl, ScrollView } from 'react-native';
 import * as Location from 'expo-location';
 
-export default function App() {
+export default function HomeComponent() {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [refreshing, setRefreshing] = React.useState(false);
 
     var dateObj = new Date((1595243443 - 18000) * 1000); 
  
@@ -16,17 +17,20 @@ export default function App() {
     
     // Get seconds part from the timestamp 
     var seconds = dateObj.getUTCSeconds();
-
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestPermissionsAsync();
+    getlocation = async () => {
+        setRefreshing(true);
+        let { status } = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
       }
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
+      setRefreshing(false)
+    }
+
+  useEffect(() => {
+    getlocation();
   }, []);
 
   let text = 'Waiting..';
@@ -37,10 +41,12 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={getlocation} />
+    }>
       <Text>{text}</Text>
       <Text>{dateObj.toUTCString()}</Text>
-    </View>
+    </ScrollView>
   );
 }
 
