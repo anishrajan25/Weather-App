@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, RefreshControl, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, RefreshControl, ScrollView, Image } from 'react-native';
 import { ListItem, Icon } from 'react-native-elements'
 
 
 
-const data = {
+const temp = {
     "city": {
       "id": 2643743,
       "name": "London",
@@ -487,24 +487,35 @@ const data = {
 
 
 
-export default DaysScreen = () => {
+export default DaysScreen = ({data}) => {
 
-    
+    if(data==null) {
+      return <View></View>
+    }
     
     return (
         <ScrollView containerStyle={styles.container}>
             {
-                data.list.map((data, i) => (
-                    <ListItem key={i} bottomDivider>
-                        <Icon name="info" />
-                        <ListItem.Content>
-                            <ListItem.Title>{i}</ListItem.Title>
-                            <ListItem.Title>{new Date((data.dt) * 1000).toLocaleString().substr(0,11)}</ListItem.Title>
-                            <ListItem.Subtitle>{data.weather.description}</ListItem.Subtitle>
-                            <ListItem.Subtitle>{data.temp.max}</ListItem.Subtitle>
-                            <ListItem.Subtitle>{data.temp.min}</ListItem.Subtitle>
-                            <ListItem.Subtitle>{data.weather.icon}</ListItem.Subtitle>
-                        </ListItem.Content>
+                data.daily.map((day, i) => (
+                    <ListItem key={i} bottomDivider containerStyle={{paddingVertical: 10}}>
+                      <ListItem.Content style={{flex: 1, flexDirection: 'row'}}>
+                          <View style={{flex: 6, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <ListItem.Title>{new Date((day.dt) * 1000).toLocaleString().substr(0,11)}</ListItem.Title>
+                            <ListItem.Title>{day.weather[0].description}</ListItem.Title>
+                          </View>
+                          <View style={{flex: 5}}>
+                            <Image style={{height: 60, width: 60}} source={{uri: `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}} />
+                          </View>
+                          <View style={{ flex: 3 , flexDirection: 'row', alignSelf:'center', justifyContent: 'flex-end'}}>
+                            <View style={{flex: 1, alignSelf:'center', alignItems: 'center'}}>
+                              <ListItem.Title>{day.temp.max.toFixed(0)}°</ListItem.Title>
+                            </View>
+                            <View style={{flex: 1, alignSelf:'center', alignItems: 'center'}}>
+                              <ListItem.Title>{day.temp.min.toFixed(0)}°</ListItem.Title>
+                            </View>
+                          </View>
+                          
+                      </ListItem.Content>
                     </ListItem>
                 ))
             }

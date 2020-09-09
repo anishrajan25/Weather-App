@@ -8,11 +8,20 @@ import TomorrowScreen from "./TomorrowScreen";
 import DaysScreen from "./DaysScreen";
 import { Header, Icon, Input } from "react-native-elements";
 import { TextInput } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import fetchDaysForecast from "../redux/ActionCreators";
 
+const mapDispatchToProps = dispatch => ({
+  fetchDaysForecast: () => dispatch(fetchDaysForecast())
+})
+
+const mapStateToProps = state => ({
+  daysForecast: state.daysForecast
+})
 const Tab = createMaterialTopTabNavigator();
 
-function TabNavigation({location, date}) {
-  console.log(location);
+function TabNavigation({location, date, data}) {
+  //console.log(location);
   return (
     <Tab.Navigator 
       tabBarPosition='bottom'
@@ -24,17 +33,18 @@ function TabNavigation({location, date}) {
         indicatorStyle: styles.indicator
       }} 
     >
-      <Tab.Screen name="Today"  component={() => <TodayScreen location={location} date={date} />} sceneContainerStyle={styles.tab} />
+      <Tab.Screen name="Today"  component={() => <TodayScreen location={location} date={date} data={data}/>} sceneContainerStyle={styles.tab} />
       <Tab.Screen name="Tomorrow" component={TomorrowScreen} style={styles.tab} />
-      <Tab.Screen name="10 Days" component={DaysScreen} style={styles.tab} />
+      <Tab.Screen name="10 Days" component={() => <DaysScreen data={data} />} style={styles.tab}  />
     </Tab.Navigator>
   );
 }
 
-export default function MainScreen() {
+const MainScreen = ({daysForecast, fetchDaysForecast}) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [temp, setTemp] = useState(null);
 
     var dateObj = new Date((1595243443 - 18000) * 1000); 
  
@@ -55,11 +65,33 @@ export default function MainScreen() {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-      setRefreshing(false)
+      setRefreshing(false);
+      console.log("yahan tk aaya");
+
+      fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${location.coords.latitude}&lon=${location.coords.longitude}&units=metric&%20&appid=ba4c76b07e91ec15fad3e632e9d09a1f`)
+      .then(response => {
+          if(response.ok) {
+              return response.json();
+          }
+          else {
+              var error = new Error('Error ' + response.status + ': ' + response.statusText);
+              error.response = response;
+              throw error;
+          }
+      }, error => {
+          var err = new Error(error.message);
+          throw err;
+      })
+      .then( data => setTemp(data))
+      .catch( error => console.log("inner fetch: " , error.message));
+
+      fetchDaysForecast();
+      console.log("upr tk yeh chal toh raha hai\n\n\n\n\n", daysForecast);
     }
 
   useEffect(() => {
     getlocation();
+    
   }, []);
 
   let text = 'Waiting..';
@@ -82,7 +114,7 @@ export default function MainScreen() {
       </View>
       <NavigationContainer>
         <TabNavigation
-          tab
+          data={temp}
           location={text} date={dateObj.toUTCString()} />
       </NavigationContainer>
     </ScrollView>
@@ -107,3 +139,5 @@ const styles = StyleSheet.create({
     fontSize: 5,
   }
 });
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainScreen);

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, RefreshControl, ScrollView } from 'react-native';
 
-export default TodayScreen = ({ location, date}) => {
+export default TodayScreen = ({data, location, date}) => {
     return (
-        <View style={styles.container}>
+        <ScrollView containerStyle={styles.container}>
             <Text>TodayScreen</Text>
-            <Text>{location}</Text>
+            <Text>{JSON.stringify(location)}</Text>
             <Text>{date}</Text>
-        </View>
+            <Text>{JSON.stringify(data)}</Text>
+        </ScrollView>
     );
 }
 

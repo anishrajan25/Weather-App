@@ -1,21 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import MainScreen from "./screens/MainScreen";
+import { Provider } from "react-redux";
+import { configureStore } from "./redux/configureStore";
+
+const store= configureStore();
+
+console.disableYellowBox = true;//rebuild to activate
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <Provider store={store}>
       <MainScreen />
-    </View>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
