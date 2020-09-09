@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
   tab: {
     color: 'white',
     backgroundColor: '#4FB0DB',
-    marginTop: 0
   },
   indicator: {
     backgroundColor: 'white'
