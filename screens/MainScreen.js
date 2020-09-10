@@ -129,7 +129,7 @@ const MainScreen = ({daysForecast, fetchDaysForecast}) => {
   }
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <StatusBar backgroundColor="blue" barStyle='light-content' />
+      <StatusBar backgroundColor='#4FB0DB' barStyle='light-content' />
       <View style={{backgroundColor: '#4FB0DB'}}>
         <TextInput
           placeholder="Search"
