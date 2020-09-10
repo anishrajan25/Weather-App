@@ -499,12 +499,13 @@ export default DaysScreen = ({data}) => {
                 data.daily.map((day, i) => (
                     <ListItem key={i} bottomDivider containerStyle={{paddingVertical: 10}}>
                       <ListItem.Content style={{flex: 1, flexDirection: 'row'}}>
-                          <View style={{flex: 6, marginTop: 'auto', marginBottom: 'auto'}}>
-                            <ListItem.Title>{new Date((day.dt) * 1000).toLocaleString().substr(0,11)}</ListItem.Title>
+                          <View style={{flex: 5, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <ListItem.Title>{new Date((day.dt) * 1000).toString().substr(0,11)}</ListItem.Title>
                             <ListItem.Title>{day.weather[0].description}</ListItem.Title>
                           </View>
-                          <View style={{flex: 5}}>
+                          <View style={{flex: 4}}>
                             <Image style={{height: 60, width: 60}} source={{uri: `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`}} />
+                            
                           </View>
                           <View style={{ flex: 3 , flexDirection: 'row', alignSelf:'center', justifyContent: 'flex-end'}}>
                             <View style={{flex: 1, alignSelf:'center', alignItems: 'center'}}>
@@ -527,6 +528,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignContent: 'center'
+        alignContent: 'center',
     }
 });

@@ -20,7 +20,7 @@ const mapStateToProps = state => ({
 })
 const Tab = createMaterialTopTabNavigator();
 
-function TabNavigation({location, date, data}) {
+function TabNavigation({location, date, data, current, reload}) {
   //console.log(location);
   return (
     <Tab.Navigator 
@@ -33,7 +33,7 @@ function TabNavigation({location, date, data}) {
         indicatorStyle: styles.indicator
       }} 
     >
-      <Tab.Screen name="Today"  component={() => <TodayScreen location={location} date={date} data={data}/>} sceneContainerStyle={styles.tab} />
+      <Tab.Screen name="Today"  component={() => <TodayScreen reload={reload} location={location} date={date} data={data} current={current}/>} sceneContainerStyle={styles.tab} />
       <Tab.Screen name="Tomorrow" component={TomorrowScreen} style={styles.tab} />
       <Tab.Screen name="10 Days" component={() => <DaysScreen data={data} />} style={styles.tab}  />
     </Tab.Navigator>
@@ -45,6 +45,7 @@ const MainScreen = ({daysForecast, fetchDaysForecast}) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [temp, setTemp] = useState(null);
+  const [curr, setCurr] = useState(null);
 
     var dateObj = new Date((1595243443 - 18000) * 1000); 
  
@@ -67,6 +68,26 @@ const MainScreen = ({daysForecast, fetchDaysForecast}) => {
       setLocation(location);
       setRefreshing(false);
       console.log("yahan tk aaya");
+
+      fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${location.coords.latitude}&lon=${location.coords.longitude}&units=metric&%20&appid=ba4c76b07e91ec15fad3e632e9d09a1f`)
+      .then(response => {
+          if(response.ok) {
+              return response.json();
+          }
+          else {
+              var error = new Error('Error ' + response.status + ': ' + response.statusText);
+              error.response = response;
+              throw error;
+          }
+      }, error => {
+          var err = new Error(error.message);
+          throw err;
+      })
+      .then( data => setCurr(data))
+      .catch( error => console.log("inner fetch: " , error.message));
+
+      console.log("upr tk yeh chal toh raha hai\n\n\n\n\n", daysForecast);
+    
 
       fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${location.coords.latitude}&lon=${location.coords.longitude}&units=metric&%20&appid=ba4c76b07e91ec15fad3e632e9d09a1f`)
       .then(response => {
@@ -101,10 +122,13 @@ const MainScreen = ({daysForecast, fetchDaysForecast}) => {
     text = JSON.stringify(location);
   }
 
+
+  const reload = () => {
+    console.log("bhag rha ye \n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    getlocation();
+  }
   return (
-    <ScrollView contentContainerStyle={styles.container} refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={getlocation} />
-    }>
+    <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor="blue" barStyle='light-content' />
       <View style={{backgroundColor: '#4FB0DB'}}>
         <TextInput
@@ -114,7 +138,7 @@ const MainScreen = ({daysForecast, fetchDaysForecast}) => {
       </View>
       <NavigationContainer>
         <TabNavigation
-          data={temp}
+          data={temp} current={curr} reload={reload}
           location={text} date={dateObj.toUTCString()} />
       </NavigationContainer>
     </ScrollView>
